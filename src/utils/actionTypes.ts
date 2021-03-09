@@ -5,6 +5,9 @@
  * Do not reference these action types directly in your code.
  */
 
+// redux内部动作类型
+// 在redux-devtool中可见
+// 日常开发不会操作里面的内容
 const randomString = () =>
   Math.random().toString(36).substring(7).split('').join('.')
 

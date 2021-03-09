@@ -26,6 +26,15 @@ import { Action, AnyAction } from './actions'
  * @template S The type of state consumed and produced by this reducer.
  * @template A The type of actions the reducer can potentially respond to.
  */
+
+/**
+ * reducer是一个接受state累加值，动作的函数
+ * 在redux中 state累计值是状态对象，值从Action中获取，reducer根据之前的累积值，计算一个新的状态对象返回
+ * @template S 累计对象State
+ * @template A 动作 可以附带payload驱动State
+ * 
+ * @returns S 返回状态
+ */
 export type Reducer<S = any, A extends Action = AnyAction> = (
   state: S | undefined,
   action: A

@@ -27,6 +27,7 @@ declare const $CombinedState: unique symbol
  * typed as always undefined, so its never expected to have a meaningful
  * value anyway. It just makes this type distinquishable from plain `{}`.
  */
+// 用于区别普通的对象 $CombinedState无实际意义
 export type CombinedState<S> = { readonly [$CombinedState]?: undefined } & S
 
 /**
