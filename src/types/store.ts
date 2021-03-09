@@ -2,23 +2,13 @@ import { Action, AnyAction } from './actions'
 import { Reducer } from './reducers'
 import '../utils/symbol-observable'
 
-/**
- * Extend the state
- *
- * This is used by store enhancers and store creators to extend state.
- * If there is no state extension, it just returns the state, as is, otherwise
- * it returns the state joined with its extension.
- *
- * Reference for future devs:
- * https://github.com/microsoft/TypeScript/issues/31751#issuecomment-498526919
- */
+// 拓展状态
+// https://github.com/microsoft/TypeScript/issues/31751#issuecomment-498526919
 export type ExtendState<State, Extension> = [Extension] extends [never]
   ? State
   : State & Extension
 
-/**
- * Internal "virtual" symbol used to make the `CombinedState` type unique.
- */
+// 用于使CombinedState 类型唯一的内部虚拟符号。
 declare const $CombinedState: unique symbol
 
 /**
