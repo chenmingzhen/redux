@@ -45,6 +45,7 @@ export default function createStore<
   StateExt = never
 >(
   reducer: Reducer<S, A>,
+  // 中间件
   enhancer?: StoreEnhancer<Ext, StateExt>
 ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
 export default function createStore<
@@ -67,6 +68,8 @@ export default function createStore<
   preloadedState?: PreloadedState<S> | StoreEnhancer<Ext, StateExt>,
   enhancer?: StoreEnhancer<Ext, StateExt>
 ): Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext {
+  // 初始时的 state。如果使用 combineReducers 创建 reducer，它必须是一个普通对象，
+  // 多个中间件的时候需要需用compose
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
     (typeof enhancer === 'function' && typeof arguments[3] === 'function')
@@ -78,16 +81,19 @@ export default function createStore<
     )
   }
 
+  // 如果第二个参数传进来是function redux会认为这是一个enhancer中间件 将preloadedState看作中间件
   if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
     enhancer = preloadedState as StoreEnhancer<Ext, StateExt>
     preloadedState = undefined
   }
 
+  // 中间件必须为undefined或function中的一种
   if (typeof enhancer !== 'undefined') {
     if (typeof enhancer !== 'function') {
       throw new Error('Expected the enhancer to be a function.')
     }
 
+    // 中间件处理
     return enhancer(createStore)(
       reducer,
       preloadedState as PreloadedState<S>
@@ -111,6 +117,8 @@ export default function createStore<
    * This prevents any bugs around consumers calling
    * subscribe/unsubscribe in the middle of a dispatch.
    */
+  // 对currentListeners进行浅拷贝
+  // 防止派发订阅的过程中consumer出现bug影响流程
   function ensureCanMutateNextListeners() {
     if (nextListeners === currentListeners) {
       nextListeners = currentListeners.slice()
@@ -122,6 +130,7 @@ export default function createStore<
    *
    * @returns The current state tree of your application.
    */
+  // 获取当前的state状态
   function getState(): S {
     if (isDispatching) {
       throw new Error(
@@ -157,6 +166,7 @@ export default function createStore<
    * @param listener A callback to be invoked on every dispatch.
    * @returns A function to remove this change listener.
    */
+  // state状态变更的监听器
   function subscribe(listener: () => void) {
     if (typeof listener !== 'function') {
       throw new Error('Expected the listener to be a function.')
@@ -174,8 +184,10 @@ export default function createStore<
     let isSubscribed = true
 
     ensureCanMutateNextListeners()
+    // 将订阅的回调放进监听器数组中
     nextListeners.push(listener)
 
+    // 返回一个取消订阅的函数
     return function unsubscribe() {
       if (!isSubscribed) {
         return
