@@ -23,6 +23,9 @@ function getUndefinedStateErrorMessage(key: string, action: Action) {
   )
 }
 
+// 检测State有无一致
+// 如reducer =combineReducers（{app:appReducer}）
+// 如果 state.app 不存在 则不符合要求
 function getUnexpectedStateShapeWarningMessage(
   inputState: object,
   reducers: ReducersMapObject,
@@ -75,11 +78,13 @@ function getUnexpectedStateShapeWarningMessage(
   }
 }
 
+// 对reducer进行初始检测
 function assertReducerShape(reducers: ReducersMapObject) {
   Object.keys(reducers).forEach(key => {
     const reducer = reducers[key]
     const initialState = reducer(undefined, { type: ActionTypes.INIT })
 
+    // 要求reducer要有initialState 即（state=initialState,...）
     if (typeof initialState === 'undefined') {
       throw new Error(
         `Reducer "${key}" returned undefined during initialization. ` +
@@ -90,6 +95,9 @@ function assertReducerShape(reducers: ReducersMapObject) {
       )
     }
 
+    // 当redux尝试dispatch一个随机的action的时候
+    // 希望reducer有返回一个state
+    // 即 switch(e){.... default: return state}
     if (
       typeof reducer(undefined, {
         type: ActionTypes.PROBE_UNKNOWN_ACTION()
@@ -196,6 +204,7 @@ export default function combineReducers(reducers: ReducersMapObject) {
       const reducer = finalReducers[key]
       const previousStateForKey = state[key]
       const nextStateForKey = reducer(previousStateForKey, action)
+      // 无知的action没有做处理异常 应返回默认的state或null或undefined
       if (typeof nextStateForKey === 'undefined') {
         const errorMessage = getUndefinedStateErrorMessage(key, action)
         throw new Error(errorMessage)

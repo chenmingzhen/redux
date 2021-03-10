@@ -234,7 +234,10 @@ export default function createStore<
    * Note that, if you use a custom middleware, it may wrap `dispatch()` to
    * return something else (for example, a Promise you can await).
    */
+
+  // dispatch 用于驱动一个Action动作
   function dispatch(action: A) {
+    // 不是纯对象
     if (!isPlainObject(action)) {
       throw new Error(
         'Actions must be plain objects. ' +
@@ -242,6 +245,7 @@ export default function createStore<
       )
     }
 
+    // action必须包含type
     if (typeof action.type === 'undefined') {
       throw new Error(
         'Actions may not have an undefined "type" property. ' +
@@ -350,6 +354,7 @@ export default function createStore<
   // When a store is created, an "INIT" action is dispatched so that every
   // reducer returns their initial state. This effectively populates
   // the initial state tree.
+  // store创建 dispatch一个init操作
   dispatch({ type: ActionTypes.INIT } as A)
 
   const store = ({
