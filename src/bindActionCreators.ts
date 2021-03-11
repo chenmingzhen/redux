@@ -1,3 +1,9 @@
+// 使用方法
+// https://redux.js.org/api/bindactioncreators
+
+// 将多个ActionCreate合并 
+// dispatch在bindActionCreator内进行
+// 使用时直接 方法名(参数)
 import { Dispatch } from './types/store'
 import {
   AnyAction,
