@@ -9,6 +9,22 @@ import {
 } from './types/store'
 import { Reducer } from './types/reducers'
 
+
+/**
+ * const enhancer = composeEnhancers(applyMiddleware(thunk));
+ * const store = createStore(reducer,enhancer);
+ * export default store;
+ */
+
+// 以上面为案例
+
+// createStore获取两个参数 第一个为reducer，第二个为enhancer（中间件）
+// 在createStore中 直接将createStore的方法传递给中间件 并且把reducer preloadedState作为闭包参数执行 createStore.ts line97
+// 来到本文件 line:80
+// 创建一个Store
+// 构建middlewareAPI参数 map所有中间件 传递middlewareAPI给中间件
+// 然后就是经典的compose的闭包操作 类似ethan-ui的compose高阶组件操作
+
 /**
  * Creates a store enhancer that applies middleware to the dispatch method
  * of the Redux store. This is handy for a variety of tasks, such as expressing
@@ -77,6 +93,7 @@ export default function applyMiddleware(
       dispatch: (action, ...args) => dispatch(action, ...args)
     }
     const chain = middlewares.map(middleware => middleware(middlewareAPI))
+    // dispatch 去到 compose.ts line57
     dispatch = compose<typeof dispatch>(...chain)(store.dispatch)
 
     return {
